@@ -45,73 +45,34 @@ namespace PdfRenameApplication
             return files;
         }
 
-        public void dynamicPdfGenerator(Form form, List<string> files, int page)
-        {            
-            PdfViewer[] pdfViewer = new PdfViewer[files.Count];
-            string[] strippedString = new string[files.Count];
-            string[] path = new string[files.Count];
-            int ypos = 0;
-            for (int i = 0; i < files.Count; i++)
-            {
-                if(i == 0)
-                {
-                    ypos = 70;
-                }
-                else
-                {
-                    ypos += 570;
-                }
-                pdfViewer[i] = new PdfViewer();
-                pdfViewer[i].Height = 500;
-                //pdfViewer[i].Width = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width;
-                pdfViewer[i].Width = 800;
-                pdfViewer[i].Location = new System.Drawing.Point(0, ypos);
-                //zoom
-                pdfViewer[i].ZoomMode = PdfViewerZoomMode.FitWidth;
+        public PdfiumViewer.PdfDocument dynamicPdfGenerator(Form form, string files, int ypos)
+        {           
+            PdfViewer pdfViewer = new PdfViewer();
+            pdfViewer = new PdfViewer();
+            pdfViewer.Height = 500;
+            //pdfViewer[i].Width = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width;
+            pdfViewer.Width = 800;
+            pdfViewer.Location = new System.Drawing.Point(0, ypos);
+            //zoom
+            pdfViewer.ZoomMode = PdfViewerZoomMode.FitWidth;
                         
-                // load pdf file.
-                byte[] bytes = System.IO.File.ReadAllBytes(files[i]);
-                var stream = new MemoryStream(bytes);
-                PdfiumViewer.PdfDocument pdfDocument = PdfiumViewer.PdfDocument.Load(stream);
-                pdfViewer[i].Document = pdfDocument;                
+            // load pdf file.
+            byte[] bytes = System.IO.File.ReadAllBytes(files);
+            var stream = new MemoryStream(bytes);
+            PdfiumViewer.PdfDocument pdfDocument = PdfiumViewer.PdfDocument.Load(stream);
+            pdfViewer.Document = pdfDocument;          
 
-                //nuget freespire.PDFViewer.
-                ////nuget install pdfiuemViewer
-                ////nuget install pdfbox
-                //nuget install IKVM.OpenJDK.Charset
-                //nuget install IKVM.OpenJDK.Core
-                //nuget install IKVM.OpenJDK.Util
-                //nuget install IKVM.OpenJDK.Runtime                
-                //general / choose item / browse /locationproject folder / packages / pdfiumviewer / lib / net20 / pdfiumviewer.dll                
+            //nuget freespire.PDFViewer.
+            ////nuget install pdfiuemViewer
+            ////nuget install pdfbox
+            //nuget install IKVM.OpenJDK.Charset
+            //nuget install IKVM.OpenJDK.Core
+            //nuget install IKVM.OpenJDK.Util
+            //nuget install IKVM.OpenJDK.Runtime                
+            //general / choose item / browse /locationproject folder / packages / pdfiumviewer / lib / net20 / pdfiumviewer.dll                
 
-                // get certain text from pdf
-                PDDocument doc = PDDocument.load(files[i]);
-                Rectangle2D rect = new Rectangle2D.Double(85, 90, 55, 10);
-                PDFTextStripperByArea stripper = new PDFTextStripperByArea();
-                String regionName = "INVOICE";
-                stripper.addRegion(regionName, rect);
-                stripper.extractRegions((PDPage)doc.getDocumentCatalog().getAllPages().get(page));
-                strippedString[i] = string.Join("",stripper.getTextForRegion(regionName).Split(Path.GetInvalidFileNameChars()));                
-
-                form.Controls.Add(pdfViewer[i]);
-                
-                double yypos = 150;
-                double xxpos = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width * .65;
-                pdfViewer[i].MouseMove += (sender, e) => trial_MouseMove(sender, e, stream);
-
-                int adjustmentXY = 100;
-                int adjustmentOneY = 50;
-                int adjustmentOneX = 100;
-
-                //dynamic design
-                dynamicLabelAndTextOUTPUT(form, files.Count, Convert.ToInt32(xxpos) + adjustmentOneX, Convert.ToInt32(yypos)+ adjustmentOneY, strippedString[i]);
-                dynamicLabelAndTextCOORDSX(form, files.Count, Convert.ToInt32(xxpos) + adjustmentXY, Convert.ToInt32(yypos) + adjustmentXY, strippedString[i]);
-                dynamicLabelAndTextCOORDSY(form, files.Count, Convert.ToInt32(xxpos) + adjustmentXY, Convert.ToInt32(yypos) + adjustmentXY, strippedString[i]);
-                dynamicLabelAndTextCOORDSWIDTH(form, files.Count, Convert.ToInt32(xxpos) + adjustmentXY, Convert.ToInt32(yypos) + adjustmentXY, strippedString[i]);
-                dynamicLabelAndTextCOORDSHEIGHT(form, files.Count, Convert.ToInt32(xxpos) + adjustmentXY, Convert.ToInt32(yypos) + adjustmentXY, strippedString[i]);
-
-                savePdfFile(folderCreation.folderPathStringProject(), pdfDocument, strippedString[i], ".pdf");                
-            }
+            form.Controls.Add(pdfViewer);
+            return pdfDocument;                            
         }
 
         public void trial_MouseMove(object sender, MouseEventArgs e, MemoryStream stream)
@@ -130,181 +91,239 @@ namespace PdfRenameApplication
             */
         }
 
-        public string dynamicLabelAndTextOUTPUT(Form form, int ttlOfTextbox, int xpos, int ypos, string value)
+        public void dynamicLabelAndTextOUTPUT(Form form, int i, int xpos, int ypos)
+        {  
+            System.Windows.Forms.Label labelOutput = new System.Windows.Forms.Label();
+            System.Windows.Forms.TextBox txtOutput = new System.Windows.Forms.TextBox();
+            
+            labelOutput.Name = "PDF-output-lbl-" + i;
+            labelOutput.Text = "INVOICE :";
+            labelOutput.Width = 60;
+            labelOutput.Height = 30;
+            labelOutput.Location = new System.Drawing.Point(xpos,ypos);
+                            
+            txtOutput.Name = "PDF-output-txt-" + i;
+            txtOutput.Text = "";                
+            txtOutput.Width = 150;
+            txtOutput.Height = 30;
+            txtOutput.Location = new System.Drawing.Point(xpos + 60, ypos-3);                
+
+            form.Controls.Add(labelOutput);
+            form.Controls.Add(txtOutput);                        
+        }
+
+        public void dynamicLabelAndTextCOORDSX(Form form, int i, int xpos, int ypos)
         {            
-            string output = "";
-            System.Windows.Forms.Label[] labelOutput = new System.Windows.Forms.Label[ttlOfTextbox];
-            System.Windows.Forms.TextBox[] txtOutput = new System.Windows.Forms.TextBox[ttlOfTextbox];
+            System.Windows.Forms.Label labelOutput = new System.Windows.Forms.Label();
+            System.Windows.Forms.TextBox txtOutput = new System.Windows.Forms.TextBox();
 
-            for (int i = 0; i<ttlOfTextbox; i++)
-            {
-                if(i == 0)
-                {
-                    ypos = ypos;
-                }
-                else
-                {
-                    ypos += 600;
-                }
-                labelOutput[i] = new System.Windows.Forms.Label();
-                labelOutput[i].Text = "INVOICE :";
-                labelOutput[i].Width = 60;
-                labelOutput[i].Height = 30;
-                labelOutput[i].Location = new System.Drawing.Point(xpos,ypos);
+            labelOutput = new System.Windows.Forms.Label();
+            labelOutput.Name = "PDF-x-lbl-" + i;
+            labelOutput.Text = "X :";
+            labelOutput.Width = 20;
+            labelOutput.Height = 30;
+            labelOutput.Location = new System.Drawing.Point(xpos, ypos + 50);
+
+            txtOutput = new System.Windows.Forms.TextBox();
+            txtOutput.Name = "PDF-x-txt-" + i;
+            txtOutput.Text = "";
+            txtOutput.Width = 30;
+            txtOutput.Height = 30;
+            txtOutput.Location = new System.Drawing.Point(xpos + 20, ypos - 3 + 50);            
+
+            form.Controls.Add(labelOutput);
+            form.Controls.Add(txtOutput);            
+        }
+
+        public void dynamicLabelAndTextCOORDSY(Form form, int i, int xpos, int ypos)
+        {
+            System.Windows.Forms.Label labelOutput = new System.Windows.Forms.Label();
+            System.Windows.Forms.TextBox txtOutput = new System.Windows.Forms.TextBox();
+         
+            labelOutput = new System.Windows.Forms.Label();
+            labelOutput.Name = "PDF-y-lbl-" + i;
+            labelOutput.Text = "Y :";
+            labelOutput.Width = 20;
+            labelOutput.Height = 30;
+            labelOutput.Location = new System.Drawing.Point(xpos + 60, ypos + 50);
+
+            txtOutput = new System.Windows.Forms.TextBox();
+            txtOutput.Name = "PDF-y-txt-" + i;
+            txtOutput.Text = "";
+            txtOutput.Width = 30;
+            txtOutput.Height = 30;
+            txtOutput.Location = new System.Drawing.Point(xpos + 80, ypos - 3 + 50);            
+
+            form.Controls.Add(labelOutput);
+            form.Controls.Add(txtOutput);            
+        }
+
+        public void dynamicLabelAndTextCOORDSWIDTH(Form form, int i, int xpos, int ypos)
+        {
+            System.Windows.Forms.Label labelOutput = new System.Windows.Forms.Label();
+            System.Windows.Forms.TextBox txtOutput = new System.Windows.Forms.TextBox();
+            
+            labelOutput = new System.Windows.Forms.Label();
+            labelOutput.Name = "PDF-w-lbl-" + i;
+            labelOutput.Text = "WIDTH :";
+            labelOutput.Width = 50;
+            labelOutput.Height = 30;
+            labelOutput.Location = new System.Drawing.Point(xpos, ypos + 90);
+
+            txtOutput = new System.Windows.Forms.TextBox();
+            txtOutput.Name = "PDF-w-txt-" + i;
+            txtOutput.Text = "";
+            txtOutput.Width = 50;
+            txtOutput.Height = 30;
+            txtOutput.Location = new System.Drawing.Point(xpos + 55, ypos - 3 + 90);           
+
+            form.Controls.Add(labelOutput);
+            form.Controls.Add(txtOutput);            
+        }
+
+        public void dynamicLabelAndTextCOORDSHEIGHT(Form form, int i, int xpos, int ypos)
+        {
+            System.Windows.Forms.Label labelOutput = new System.Windows.Forms.Label();
+            System.Windows.Forms.TextBox txtOutput = new System.Windows.Forms.TextBox();
+
+            labelOutput = new System.Windows.Forms.Label();
+            labelOutput.Name = "PDF-h-lbl-" + i;
+            labelOutput.Text = "HEIGHT :";
+            labelOutput.Width = 55;
+            labelOutput.Height = 30;
+            labelOutput.Location = new System.Drawing.Point(xpos, ypos + 120);
+
+            txtOutput = new System.Windows.Forms.TextBox();
+            txtOutput.Name = "PDF-h-txt-" + i;                
+            txtOutput.Width = 50;
+            txtOutput.Height = 30;
+            txtOutput.Location = new System.Drawing.Point(xpos + 55, ypos - 3 + 120);            
+
+            form.Controls.Add(labelOutput);
+            form.Controls.Add(txtOutput);            
+        }
+
+        public void dynamicLabelAndTextCOORDPAGE(Form form, int i, int xpos, int ypos)
+        {
+            System.Windows.Forms.Label labelOutput = new System.Windows.Forms.Label();
+            System.Windows.Forms.TextBox txtOutput = new System.Windows.Forms.TextBox();
+
+            labelOutput = new System.Windows.Forms.Label();
+            labelOutput.Name = "PDF-pg-lbl-" + i;
+            labelOutput.Text = "PAGES :";                
+            labelOutput.Width = 50;
+            labelOutput.Height = 30;
+            labelOutput.Location = new System.Drawing.Point(xpos, ypos + 150);
+
+            txtOutput = new System.Windows.Forms.TextBox();
+            txtOutput.Name = "PDF-pg-txt-" + i;
+            txtOutput.Text = "";
+            txtOutput.Width = 50;
+            txtOutput.Height = 30;
+            txtOutput.Location = new System.Drawing.Point(xpos + 55, ypos - 3 + 150);            
+
+            form.Controls.Add(labelOutput);
+            form.Controls.Add(txtOutput);
+           
+        }
+
+        public void dynamicCropBtn(Form form, int i, int xpos, int ypos, string file, string path, PdfiumViewer.PdfDocument pdfDocument, string fileExtension)
+        //public string dynamicCropBtn(Form form, int ttlOfTextbox, int xpos, int ypos, string value)
+        {            
+            System.Windows.Forms.Button cropBtn = new System.Windows.Forms.Button();
+           
+            cropBtn = new System.Windows.Forms.Button();
+            cropBtn.Name = "CropBtn" + i;
+            cropBtn.Text = "Re/Crop";
+            cropBtn.Width = 80;
+            cropBtn.Height = 85;
+            cropBtn.Location = new System.Drawing.Point(xpos + 120, ypos + 130);                
+            form.Controls.Add(cropBtn);
                 
-                txtOutput[i] = new System.Windows.Forms.TextBox();
-                txtOutput[i].Text = value;                
-                txtOutput[i].Width = 150;
-                txtOutput[i].Height = 30;
-                txtOutput[i].Location = new System.Drawing.Point(xpos + 60, ypos-3);
-                output = txtOutput[i].Text;                
-
-                form.Controls.Add(labelOutput[i]);
-                form.Controls.Add(txtOutput[i]);
-            }
-            return output;
+            cropBtn.Click += (sender, e) => cropString(sender, e, file, form, i, path, pdfDocument, fileExtension);            
         }
 
-        public string dynamicLabelAndTextCOORDSX(Form form, int ttlOfTextbox, int xpos, int ypos, string value)
+        public void cropString(object sender, EventArgs e, string file, Form form, int index, string path, PdfiumViewer.PdfDocument pdfDocument, string fileExtension)
         {
-            string output = "";
-            System.Windows.Forms.Label[] labelOutput = new System.Windows.Forms.Label[ttlOfTextbox];
-            System.Windows.Forms.TextBox[] txtOutput = new System.Windows.Forms.TextBox[ttlOfTextbox];
-
-            for (int i = 0; i < ttlOfTextbox; i++)
-            {
-                if (i == 0)
+            string strippedString = "";            
+            
+            if (form.Controls[("CropBtn" + (index))].Text != "Re/Crop")
+            {                
+                strippedString = form.Controls[("PDF-output-txt-" + (index))].Text;
+                //check if string is empty
+                if (strippedString != "")
                 {
-                    ypos = ypos;
+                    form.Controls[("CropBtn" + (index))].Text = "Re/Crop";
+                    savePdfFile(folderCreation.folderPathStringProject(), pdfDocument, strippedString, ".pdf");
+                    MessageBox.Show("PDF-file has been created \n @ : " + folderCreation.folderPathStringProject(), "NOTE!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    string[] dynamicTxtboxName = { "PDF-x-txt-" + (index), "PDF-y-txt-" + (index), "PDF-w-txt-" + (index), "PDF-h-txt-" + (index), "PDF-pg-txt-" + (index), "PDF-output-txt-" + (index) };
+                    form.Controls[dynamicTxtboxName[0]].Text = "";
+                    form.Controls[dynamicTxtboxName[1]].Text = "";
+                    form.Controls[dynamicTxtboxName[2]].Text = "";
+                    form.Controls[dynamicTxtboxName[3]].Text = "";
+                    form.Controls[dynamicTxtboxName[4]].Text = "";
+                    form.Controls[dynamicTxtboxName[5]].Text = "";
                 }
                 else
                 {
-                    ypos += 600;
-                }
-                labelOutput[i] = new System.Windows.Forms.Label();
-                labelOutput[i].Text = "X :";
-                labelOutput[i].Width = 20;
-                labelOutput[i].Height = 30;
-                labelOutput[i].Location = new System.Drawing.Point(xpos, ypos + 50);
-
-                txtOutput[i] = new System.Windows.Forms.TextBox();
-                txtOutput[i].Text = "";
-                txtOutput[i].Width = 30;
-                txtOutput[i].Height = 30;
-                txtOutput[i].Location = new System.Drawing.Point(xpos + 20, ypos - 3 + 50);
-                output = txtOutput[i].Text;
-
-                form.Controls.Add(labelOutput[i]);
-                form.Controls.Add(txtOutput[i]);
-            }
-            return output;
-        }
-
-        public string dynamicLabelAndTextCOORDSY(Form form, int ttlOfTextbox, int xpos, int ypos, string value)
-        {
-            string output = "";
-            System.Windows.Forms.Label[] labelOutput = new System.Windows.Forms.Label[ttlOfTextbox];
-            System.Windows.Forms.TextBox[] txtOutput = new System.Windows.Forms.TextBox[ttlOfTextbox];
-
-            for (int i = 0; i < ttlOfTextbox; i++)
+                    MessageBox.Show("Stripped string is empty", "NOTE!", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    form.Controls[("CropBtn" + (index))].Text = "Re/Crop";
+                }                
+            }           
+            else
             {
-                if (i == 0)
+                double[] cords = new double[4];
+                int page = 0;
+
+                string[] dynamicTxtboxName = { "PDF-x-txt-" + (index), "PDF-y-txt-" + (index), "PDF-w-txt-" + (index), "PDF-h-txt-" + (index), "PDF-pg-txt-" + (index), "PDF-output-txt-" + (index) };
+                //convertion from string to double
+                Double.TryParse(form.Controls[dynamicTxtboxName[0]].Text, out cords[0]);
+                Double.TryParse(form.Controls[dynamicTxtboxName[1]].Text, out cords[1]);
+                Double.TryParse(form.Controls[dynamicTxtboxName[2]].Text, out cords[2]);
+                Double.TryParse(form.Controls[dynamicTxtboxName[3]].Text, out cords[3]);
+                int.TryParse(form.Controls[dynamicTxtboxName[4]].Text, out page);
+
+                // get certain text from pdf
+                PDDocument doc = PDDocument.load(file);
+                Rectangle2D rect = new Rectangle2D.Double(cords[0], cords[1], cords[2], cords[3]);
+                PDFTextStripperByArea stripper = new PDFTextStripperByArea();
+                String regionName = "INVOICE";
+                stripper.addRegion(regionName, rect);
+                stripper.extractRegions((PDPage)doc.getDocumentCatalog().getAllPages().get(page));
+                strippedString = string.Join("", stripper.getTextForRegion(regionName).Split(Path.GetInvalidFileNameChars()));
+
+                form.Controls[dynamicTxtboxName[5]].Text = strippedString;
+                DialogResult result = MessageBox.Show("CHECK INVOICE. \n CLICK YES TO SAVE \n CLICK NO TO MODIFY COORDINATES","NOTE!",MessageBoxButtons.YesNo,MessageBoxIcon.Information);                
+                if (result == DialogResult.Yes)
                 {
-                    ypos = ypos;
+                    form.Controls[dynamicTxtboxName[5]].Text = strippedString;
+                    form.Controls[("CropBtn" + (index))].Text = "SAVE-PDF";
                 }
                 else
                 {
-                    ypos += 600;
+                    form.Controls[dynamicTxtboxName[5]].Text = strippedString;
+                    form.Controls[("CropBtn" + (index))].Text = "Re/Crop";
                 }
-                labelOutput[i] = new System.Windows.Forms.Label();
-                labelOutput[i].Text = "Y :";
-                labelOutput[i].Width = 20;
-                labelOutput[i].Height = 30;
-                labelOutput[i].Location = new System.Drawing.Point(xpos + 60, ypos + 50);
-
-                txtOutput[i] = new System.Windows.Forms.TextBox();
-                txtOutput[i].Text = "";
-                txtOutput[i].Width = 30;
-                txtOutput[i].Height = 30;
-                txtOutput[i].Location = new System.Drawing.Point(xpos + 80, ypos - 3 + 50);
-                output = txtOutput[i].Text;
-
-                form.Controls.Add(labelOutput[i]);
-                form.Controls.Add(txtOutput[i]);
-            }
-            return output;
+            }            
+            
+            //return strippedString;
         }
 
-        public string dynamicLabelAndTextCOORDSWIDTH(Form form, int ttlOfTextbox, int xpos, int ypos, string value)
+        public string defaultCropString(string file, int page)
         {
-            string output = "";
-            System.Windows.Forms.Label[] labelOutput = new System.Windows.Forms.Label[ttlOfTextbox];
-            System.Windows.Forms.TextBox[] txtOutput = new System.Windows.Forms.TextBox[ttlOfTextbox];
+            string strippedString = "";
 
-            for (int i = 0; i < ttlOfTextbox; i++)
-            {
-                if (i == 0)
-                {
-                    ypos = ypos;
-                }
-                else
-                {
-                    ypos += 600;
-                }
-                labelOutput[i] = new System.Windows.Forms.Label();
-                labelOutput[i].Text = "WIDTH :";
-                labelOutput[i].Width = 50;
-                labelOutput[i].Height = 30;
-                labelOutput[i].Location = new System.Drawing.Point(xpos, ypos + 85);
-
-                txtOutput[i] = new System.Windows.Forms.TextBox();
-                txtOutput[i].Text = "";
-                txtOutput[i].Width = 50;
-                txtOutput[i].Height = 30;
-                txtOutput[i].Location = new System.Drawing.Point(xpos + 50, ypos - 3 + 85);
-                output = txtOutput[i].Text;
-
-                form.Controls.Add(labelOutput[i]);
-                form.Controls.Add(txtOutput[i]);
-            }
-            return output;
+            // get certain text from pdf
+            PDDocument doc = PDDocument.load(file);
+            Rectangle2D rect = new Rectangle2D.Double(85, 90, 55, 10);
+            PDFTextStripperByArea stripper = new PDFTextStripperByArea();
+            String regionName = "INVOICE";
+            stripper.addRegion(regionName, rect);
+            stripper.extractRegions((PDPage)doc.getDocumentCatalog().getAllPages().get(page));
+            strippedString = string.Join("", stripper.getTextForRegion(regionName).Split(Path.GetInvalidFileNameChars()));
+            return strippedString;
         }
-
-        public string dynamicLabelAndTextCOORDSHEIGHT(Form form, int ttlOfTextbox, int xpos, int ypos, string value)
-        {
-            string output = "";
-            System.Windows.Forms.Label[] labelOutput = new System.Windows.Forms.Label[ttlOfTextbox];
-            System.Windows.Forms.TextBox[] txtOutput = new System.Windows.Forms.TextBox[ttlOfTextbox];
-
-            for (int i = 0; i < ttlOfTextbox; i++)
-            {
-                if (i == 0)
-                {
-                    ypos = ypos;
-                }
-                else
-                {
-                    ypos += 600;
-                }
-                labelOutput[i] = new System.Windows.Forms.Label();
-                labelOutput[i].Text = "HEIGHT :";
-                labelOutput[i].Width = 55;
-                labelOutput[i].Height = 30;
-                labelOutput[i].Location = new System.Drawing.Point(xpos, ypos + 120);
-
-                txtOutput[i] = new System.Windows.Forms.TextBox();
-                txtOutput[i].Text = "";
-                txtOutput[i].Width = 50;
-                txtOutput[i].Height = 30;
-                txtOutput[i].Location = new System.Drawing.Point(xpos + 55, ypos - 3 + 120);
-                output = txtOutput[i].Text;
-
-                form.Controls.Add(labelOutput[i]);
-                form.Controls.Add(txtOutput[i]);
-            }
-            return output;
-        }
-
         public void savePdfFile(string path, PdfiumViewer.PdfDocument pdfDocument, string fileName, string fileExtension)
         {            
             string file = path + "\\" + fileName + fileExtension;          
@@ -313,3 +332,11 @@ namespace PdfRenameApplication
         }
     }
 }
+
+/*
+* checks all control elements
+    foreach (Control element in form.Controls)
+    {
+    MessageBox.Show(element.Name);
+    } 
+*/

@@ -58,21 +58,32 @@ namespace PdfRenameApplication
                 // adjust form design
                 this.WindowState = FormWindowState.Maximized;
                 this.MaximizeBox = false;
-
-                List<string> files = general_Class.locateFile();                
-                general_Class.dynamicPdfGenerator(this, files, Convert.ToInt32(textBox2.Text));
+                int ypos = 0;
+                int xpos = 0;
+                List<string> files = general_Class.locateFile();
+                for(int loop = 0; loop < files.Count; loop++)
+                {
+                    if (loop == 0)
+                    {
+                        ypos = 70;
+                    }
+                    else
+                    {
+                        ypos += 570;
+                    }
+                    xpos = Convert.ToInt32(System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width * .65);
+                    PdfDocument pdfDocument = general_Class.dynamicPdfGenerator(this, files[loop], ypos);
+                    general_Class.dynamicLabelAndTextOUTPUT(this, loop, xpos, ypos + 50);
+                    general_Class.dynamicLabelAndTextCOORDSX(this, loop, xpos, ypos + 50);
+                    general_Class.dynamicLabelAndTextCOORDSY(this, loop, xpos, ypos + 50);
+                    general_Class.dynamicLabelAndTextCOORDSWIDTH(this, loop, xpos, ypos + 50);
+                    general_Class.dynamicLabelAndTextCOORDSHEIGHT(this, loop, xpos, ypos + 50);
+                    general_Class.dynamicLabelAndTextCOORDPAGE(this, loop, xpos, ypos + 50);
+                    general_Class.dynamicCropBtn(this, loop, xpos, ypos, files[loop], folderCreation.folderPathStringProject(), pdfDocument, ".pdf");
+                }                
             }
         }
-       
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-            button1.Enabled = true;
-            if(textBox2.Text != string.Empty)
-            {
-                textBox2.Enabled = false;
-            }
-        }
-
+         
         private void btnOneDesign()
         {
             button1.Image = (new Bitmap(Resources.investigate, new Size(30, 20)));

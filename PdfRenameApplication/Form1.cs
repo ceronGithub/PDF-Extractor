@@ -73,13 +73,14 @@ namespace PdfRenameApplication
                     }
                     xpos = Convert.ToInt32(System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width * .65);
                     PdfDocument pdfDocument = general_Class.dynamicPdfGenerator(this, files[loop], ypos);
-                    general_Class.dynamicLabelAndTextOUTPUT(this, loop, xpos, ypos + 50);
-                    general_Class.dynamicLabelAndTextCOORDSX(this, loop, xpos, ypos + 50);
-                    general_Class.dynamicLabelAndTextCOORDSY(this, loop, xpos, ypos + 50);
-                    general_Class.dynamicLabelAndTextCOORDSWIDTH(this, loop, xpos, ypos + 50);
-                    general_Class.dynamicLabelAndTextCOORDSHEIGHT(this, loop, xpos, ypos + 50);
-                    general_Class.dynamicLabelAndTextCOORDPAGE(this, loop, xpos, ypos + 50);
-                    general_Class.dynamicCropBtn(this, loop, xpos, ypos, files[loop], folderCreation.folderPathStringProject(), pdfDocument, ".pdf");
+                    general_Class.dynamicLabelAndTextOUTPUT(this, loop, xpos, ypos + 150);
+                    general_Class.dynamicLabelAndTextCOORDSX(this, loop, xpos, ypos + 150);
+                    general_Class.dynamicLabelAndTextCOORDSY(this, loop, xpos, ypos + 150);
+                    general_Class.dynamicLabelAndTextCOORDSWIDTH(this, loop, xpos, ypos + 150);
+                    general_Class.dynamicLabelAndTextCOORDSHEIGHT(this, loop, xpos, ypos + 150);
+                    general_Class.dynamicLabelAndTextCOORDPAGE(this, loop, xpos, ypos + 150);
+                    general_Class.dynamicLabelAndIMAGE(this, loop, xpos, ypos + 150, files[loop]);
+                    general_Class.dynamicCropBtn(this, loop, xpos, ypos + 105, files[loop], files,folderCreation.folderPathStringProject(), pdfDocument, ".pdf", files.Count);
                 }                
             }
         }

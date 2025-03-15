@@ -502,7 +502,8 @@ namespace PdfRenameApplication
             return strippedString;
         }
         public void savePdfFile(string path, PdfiumViewer.PdfDocument pdfDocument, string fileName, string fileExtension)
-        {            
+        {
+            folderCreation.folderCreationProjectFolder();
             string file = path + "\\" + fileName + fileExtension;          
             //System.IO.File.Copy(pathFolder, path[i]);
             pdfDocument.Save(file);

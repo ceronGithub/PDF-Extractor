@@ -451,13 +451,14 @@ namespace PdfRenameApplication
                     form.Controls[dynamicTxtboxName[1]].Text = "" + coords[1]; // y 
                     form.Controls[dynamicTxtboxName[2]].Text = "" + coords[2]; // w
                     form.Controls[dynamicTxtboxName[3]].Text = "" + coords[3]; // h
-                    form.Controls[dynamicTxtboxName[4]].Text = "" + coords[4]; // pg          
+                    form.Controls[dynamicTxtboxName[4]].Text = "" + coords[4]; // pg                              
 
                     strippedString[index] = cutStringFromPdf(fileCollection[index], coords[0], coords[1], coords[2], coords[3], Convert.ToInt32(coords[4]));
                     form.Controls[dynamicTxtboxName[5]].Text = strippedString[index];
                     if (form.Controls[dynamicTxtboxName[5]].Text != string.Empty && form.Controls[dynamicTxtboxName[5]].Text != "")
-                    {                        
-                        //form.Controls[dynamicBtnName[0]].Text = "SAVE-PDF";                        
+                    {
+                        form.Controls[dynamicTxtboxName[5]].Enabled = false;
+                        form.Controls[dynamicBtnName[0]].Text = "SAVE-PDF";                        
                         form.Controls[("setStandardCoordsBtn")].Text = "SAVE-ALL-PDF";
                     }
                     

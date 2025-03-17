@@ -98,5 +98,11 @@ namespace PdfRenameApplication
             button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             button1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
         }
+
+        private void fileDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string path=folderCreation.folderPathStringMain();            
+            MessageBox.Show("File Directory : \n @"+path,"FILE!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }
